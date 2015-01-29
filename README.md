@@ -6,6 +6,16 @@ A Go command line utility to check domain name availability.
 
     go get github.com/daryl/gomain
 
+## Documentation
+
+There are 3 availability states.
+
+```
+A  Available
+U  Unavailable
+M  Maybe
+```
+
 ## Example
 
     gomain daryl
