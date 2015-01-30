@@ -30,6 +30,7 @@ const (
 
 var (
 	endpoint = "https://domainr.com/api/json/search?q=%s&client_id=gomain"
+	out      = os.Stdout
 )
 
 type query struct {
@@ -53,8 +54,8 @@ func main() {
 	argv := flag.Args()
 
 	if len(argv) < 1 {
-		fmt.Printf("Domain required.\n")
-		return
+		fmt.Fprintf(os.Stderr, "Domain required.\n")
+		os.Exit(1)
 	}
 
 	tick := time.NewTicker(50 * time.Millisecond)
@@ -65,24 +66,28 @@ func main() {
 	tick.Stop()
 
 	if err != nil {
-		fmt.Printf("Server could not be reached.\n")
-		return
+		fmt.Fprintf(os.Stderr, "Server could not be reached.\n")
+		os.Exit(1)
+	}
+
+	body, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Invalid response from server.\n")
+		os.Exit(1)
 	}
 
 	var query query
-
-	body, _ := ioutil.ReadAll(req.Body)
 
 	json.Unmarshal(body, &query)
 
 	for _, dom := range query.Results {
 		switch dom.Availability {
 		case "available":
-			fmt.Printf("%sA %s%s\n", green, normal, dom.Domain)
+			fmt.Fprintf(out, "%sA %s%s\n", green, normal, dom.Domain)
 		case "maybe", "unknown":
-			fmt.Printf("%sM %s%s\n", yellow, normal, dom.Domain)
+			fmt.Fprintf(out, "%sM %s%s\n", yellow, normal, dom.Domain)
 		default:
-			fmt.Printf("%sU %s%s\n", gray, normal, dom.Domain)
+			fmt.Fprintf(out, "%sU %s%s\n", gray, normal, dom.Domain)
 		}
 	}
 }
@@ -92,6 +97,6 @@ func tock(t *time.Ticker) {
 	s.Set(spin.Box1)
 
 	for _ = range t.C {
-		fmt.Printf("\r%s", s.Next())
+		fmt.Fprintf(out, "\r%s", s.Next())
 	}
 }
