@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"sync"
 	"time"
 )
 
@@ -60,12 +61,19 @@ func main() {
 		os.Exit(1)
 	}
 
-	tick := time.NewTicker(50 * time.Millisecond)
+	wg := sync.WaitGroup{}
+	ex := make(chan struct{})
 
-	go tock(tick)
+	go func() {
+		wg.Add(1)
+		tick(50*time.Millisecond, ex)
+		wg.Done()
+	}()
+
 	req, err := http.Get(fmt.Sprintf(endpoint, argv[0]))
-	fmt.Printf("\r")
-	tick.Stop()
+
+	close(ex)
+	wg.Wait()
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Server could not be reached.\n")
@@ -73,6 +81,7 @@ func main() {
 	}
 
 	body, err := ioutil.ReadAll(req.Body)
+
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Invalid response from server.\n")
 		os.Exit(1)
@@ -94,11 +103,19 @@ func main() {
 	}
 }
 
-func tock(t *time.Ticker) {
+func tick(d time.Duration, ex chan struct{}) {
+	t := time.NewTicker(d)
 	s := spin.New()
 	s.Set(box)
 
-	for _ = range t.C {
-		fmt.Fprintf(out, "\r%s", s.Next())
+	for {
+		select {
+		case <-t.C:
+			fmt.Fprintf(out, "\r%s", s.Next())
+		case <-ex:
+			t.Stop()
+			fmt.Printf("\r")
+			return
+		}
 	}
 }
