@@ -53,7 +53,7 @@ func main() {
 	argv := flag.Args()
 
 	if len(argv) < 1 {
-		fmt.Println("<domain> required")
+		fmt.Printf("Domain required.\n")
 		return
 	}
 
