@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/tj/go-spin"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -29,8 +30,9 @@ const (
 )
 
 var (
-	endpoint = "https://domainr.com/api/json/search?q=%s&client_id=gomain"
-	out      = os.Stdout
+	endpoint           = "https://domainr.com/api/json/search?q=%s&client_id=gomain"
+	out      io.Writer = os.Stdout
+	box                = spin.Box1
 )
 
 type query struct {
@@ -62,7 +64,7 @@ func main() {
 
 	go tock(tick)
 	req, err := http.Get(fmt.Sprintf(endpoint, argv[0]))
-	fmt.Printf("\n")
+	fmt.Printf("\r")
 	tick.Stop()
 
 	if err != nil {
@@ -94,7 +96,7 @@ func main() {
 
 func tock(t *time.Ticker) {
 	s := spin.New()
-	s.Set(spin.Box1)
+	s.Set(box)
 
 	for _ = range t.C {
 		fmt.Fprintf(out, "\r%s", s.Next())
