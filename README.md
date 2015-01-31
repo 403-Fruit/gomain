@@ -2,9 +2,15 @@
 
 A Go command line utility to check domain name availability.
 
+![](./example.gif)
+
 ## Installation
 
     go get github.com/daryl/gomain
+
+## Usage
+
+    gomain google
 
 ## Documentation
 
@@ -16,8 +22,6 @@ U  Unavailable
 M  Maybe
 ```
 
-## Example
+## License
 
-    gomain daryl
-
-![](./example.gif)
+MIT
