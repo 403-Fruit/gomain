@@ -37,13 +37,11 @@ var (
 )
 
 type query struct {
-	Results []result
 	Query   string
-}
-
-type result struct {
-	Availability string
-	Domain       string
+	Results []struct {
+		Availability string
+		Domain       string
+	}
 }
 
 func main() {
