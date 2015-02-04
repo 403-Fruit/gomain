@@ -21,6 +21,7 @@ const usage = `
   $ gomain daryl
   $ gomain daryl.im
   $ gomain foo.com
+
 `
 
 const (
@@ -45,12 +46,12 @@ type query struct {
 }
 
 func main() {
-	flag.Parse()
-
 	flag.Usage = func() {
-		fmt.Println(usage)
+		fmt.Printf(usage)
 		os.Exit(0)
 	}
+
+	flag.Parse()
 
 	argv := flag.Args()
 
