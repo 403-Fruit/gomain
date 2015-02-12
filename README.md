@@ -6,11 +6,11 @@ A Go command line utility to check domain name availability.
 
 ## Installation
 
-    go get github.com/daryl/gomain
+    $ go get github.com/daryl/gomain
 
 ## Usage
 
-    gomain google
+    $ gomain google
 
 ## Documentation
 
